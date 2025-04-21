@@ -1,86 +1,87 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-
-import Avatar from 'react-avatar';
+import { useSearchParams } from "react-router-dom";
+import API_KEY from '../constant/Youtube.jsx';
+import axios from "axios";
+import Avatar from "react-avatar";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
-import { FaRegShareSquare } from "react-icons/fa";
-import { CiSaveDown2 } from "react-icons/ci";
-import LiveChat from './LiveChat'; // Import the LiveChat component
+import { PiShareFatLight } from "react-icons/pi";
+import { GoDownload } from "react-icons/go";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { LuSendHorizonal } from "react-icons/lu";
+import LiveChat from './LiveChat.jsx';
+import {useDispatch} from "react-redux";
 
 const Watch = () => {
-  const [singleVideo, setSingleVideo] = useState(null);
+    const [input, setInput] = useState("");
+    const [singleVideo, setSingleVideo] = useState(null);
+    const [searchParams] = useSearchParams();
+    const videoId = searchParams.get('v');
+    const dispatch = useDispatch();
 
-  const location = useLocation();
-  const video = location.state?.video;
-
-  const getSingleVideo = async () => {
-    try {
-      const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`);
-      setSingleVideo(res?.data?.items[0]);
-    } catch (error) {
-      console.log(error);
+    const getSingleVideo = async () => {
+        try {
+            const res = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`);
+            setSingleVideo(res?.data?.items[0]);
+        } catch (error) {
+            console.log(error);
+        }
     }
-  };
 
-  useEffect(() => {
-    getSingleVideo();
-  }, []);
+    const sendMessage = () => {
+        dispatch(sendMessage({name:"Patel", message:input}));
+        setInput("");
+    }
 
-  if (!video) {
-    return <div>Video not found!</div>;
-  }
+    useEffect(() => {
+        getSingleVideo();
+    }, []);
 
-  const videoId = video.id.videoId || video.id;
+    return (
+        <div className='flex ml-4 w-[100%] mt-2'>
+            <div className='flex w-[100%]'>
+                {/* Video Section (Left Side) */}
+                <div className='w-[70%]'>
+                    <iframe
+                        width="100%"
+                        height="500"
+                        src={`https://www.youtube.com/embed/${videoId}?&autoplay=0`}
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen>
+                    </iframe>
+                    <h1 className='font-bold mt-2 text-lg'>{singleVideo?.snippet?.title}</h1>
+                    <div className='flex items-center justify-between'>
+                        <div className='flex items-center justify-between w-[35%]'>
+                            <div className='flex'>
+                                <Avatar src="https://play-lh.googleusercontent.com/C9CAt9tZr8SSi4zKCxhQc9v4I6AOTqRmnLchsu1wVDQL0gsQ3fmbCVgQmOVM1zPru8UH=w240-h480-rw" size={35} round={true} />
+                                <h1 className='font-bold ml-2'>{singleVideo?.snippet?.channelTitle}</h1>
+                            </div>
+                            <button className='px-4 py-1 font-medium bg-black text-white rounded-full'>Subscribe</button>
+                        </div>
+                        <div className='flex items-center w-[40%] justify-between mt-2'>
+                            <div className='flex items-center cursor-pointer bg-gray-200 px-4 py-2 rounded-full'>
+                                <AiOutlineLike size="20px" className='mr-5' />
+                                <AiOutlineDislike size="20px" />
+                            </div>
+                            <div className='flex items-center cursor-pointer bg-gray-200 px-4 py-2 rounded-full'>
+                                <PiShareFatLight size="20px" className='mr-2' />
+                                <span>Share</span>
+                            </div>
+                            <div className='flex items-center cursor-pointer bg-gray-200 px-4 py-2 rounded-full'>
+                                <GoDownload />
+                                <span>Download</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  return (
-    <div className="mt-20 ml-3 flex">
-      {/* Video section */}
-      <div className="flex-1 mr-5">
-        <iframe
-          width="760"
-          height="380"
-          src={`https://www.youtube.com/embed/${videoId}?&autoplay=1`}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-        ></iframe>
-        <h1 className="font-bold mt-2 text-lg">{singleVideo?.snippet?.title}</h1>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-between w-[42%]">
-            <div className="flex items-center">
-              <Avatar src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" />
-              <h1 className="ml-5 font-bold">{singleVideo?.snippet?.channelTitle}</h1>
+                {/* Live Chat Section (Right Side) */}
+                <div className='w-[20%] ml-4'>
+                    <LiveChat />
+                </div>
             </div>
-            <button className="px-4 py-1 font-medium bg-black text-white rounded-full ml-5">Subscribe</button>
-          </div>
-          <div className="flex items-center justify-between w-[41.5%]">
-            <div className="flex items-center mr-3">
-              <div className="flex items-center cursor-pointer bg-gray-300 px-4 py-1.5 rounded-full mr-3">
-                <AiOutlineLike size="22px" className="mr-3" />
-                <AiOutlineDislike size="22px" />
-              </div>
-              <div className="flex items-center cursor-pointer bg-gray-300 px-3 py-1.5 rounded-full mr-3">
-                <FaRegShareSquare size="20px" />
-                <span className="ml-2">Share</span>
-              </div>
-              <div className="flex items-center cursor-pointer bg-gray-300 px-3 py-1.5 rounded-full">
-                <CiSaveDown2 size="20px" />
-                <span className="ml-2">Download</span>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    )
+}
 
-      {/* Live Chat Section */}
-      <div className="w-[350px] ml-5 flex-shrink-0">
-        <LiveChat /> {/* Render LiveChat component here */}
-      </div>
-    </div>
-  );
-};
-
-export default Watch;
+export default Watch

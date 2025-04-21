@@ -15,10 +15,16 @@ const LiveChat = () => {
     // Simulating new messages arriving every second
     useEffect(() => {
         const intervalId = setInterval(() => {
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { user: 'User3', text: 'Amazing!' },
-            ]);
+            setMessages((prevMessages) => {
+                // Keep only the last maxMessages-1 messages before adding new one
+                const updatedMessages = prevMessages.length >= maxMessages 
+                    ? prevMessages.slice(1) 
+                    : prevMessages;
+                return [
+                    ...updatedMessages,
+                    { user: 'User3', text: 'Amazing!' },
+                ];
+            });
         }, 3000); // New message every 3 seconds
 
         return () => clearInterval(intervalId); // Cleanup the interval on component unmount
@@ -26,15 +32,18 @@ const LiveChat = () => {
 
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
-        setMessages([...messages, { user: 'User', text: newMessage }]);
+        setMessages(prev => [
+            ...(prev.length >= maxMessages ? prev.slice(1) : prev),
+            { user: 'User', text: newMessage }
+        ]);
         setNewMessage('');
     };
 
     return (
-        <div className="border border-gray-300 w-[350px]  ml-5 flex-shrink-0 bg-white p-4 rounded-lg shadow-lg">
+        <div className="border border-gray-300 w-[350px] ml-5 flex-shrink-0 bg-white p-4 rounded-lg shadow-lg">
             {/* Chat Header */}
-            <div className="p-5 rounded-lg  items-center justify-between py-3">
-                <h2 className="text-xl font-semibold ">TOP Chat</h2>
+            <div className="p-5 rounded-lg items-center justify-between py-3">
+                <h2 className="text-xl font-semibold">TOP Chat</h2>
                 <div className='flex items-center'>
                     <SiLivechat />
                     <p className=''>LiveChat</p>
@@ -58,6 +67,7 @@ const LiveChat = () => {
                     onChange={(e) => setNewMessage(e.target.value)}
                     className="flex-1 px-4 py-2 bg-gray-200 rounded-full"
                     placeholder="Type a message"
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
                 <button
                     onClick={handleSendMessage}
@@ -66,7 +76,6 @@ const LiveChat = () => {
                     <IoMdSend size="25px" />
                 </button>
             </div>
-
         </div>
     );
 };
