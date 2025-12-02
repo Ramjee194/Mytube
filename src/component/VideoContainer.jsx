@@ -4,7 +4,7 @@ import { YOUTUBE_VIDEO_API, API_KEY } from '../constant/Youtube';
 import VideoCart from './VideoCart';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { setHomeVideo } from '../utils/appSlice';
+import { setHomeVideo } from '../utils/AppSlice';
 
 const VideoContainer = () => {
     const { video, category } = useSelector((store) => store.app);

@@ -5,7 +5,7 @@ import { CiVideoOn } from "react-icons/ci";
 import Avatar from "react-avatar";
 import { CiSearch } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleSidebar, setCategory, setSearchSuggestion } from "../utils/appSlice";
+import { toggleSidebar, setCategory, setSearchSuggestion } from "../utils/AppSlice";
 import { useState } from "react";
 import { SEARCH_SUGGESTIONS_API } from "../constant/Youtube";
 import axios from "axios";

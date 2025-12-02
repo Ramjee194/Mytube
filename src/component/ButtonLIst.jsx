@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {useDispatch} from "react-redux";
-import { setCategory } from '../utils/appSlice';
+import { setCategory } from '../utils/AppSlice';
 
 const buttonList = ["All", "Javascript", "Java", "Live", "Music", "Songs", "Vlogs", "Trending", "Programming", "News", "Technology", "Cricket", "Comedy", "Thriller", ]
 
